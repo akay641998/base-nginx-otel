@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+echo "---> Copying site files to nginx html directory..."
+cp -rf /tmp/src/*.html /usr/share/nginx/html/ 2>/dev/null || true
+cp -rf /tmp/src/*.css  /usr/share/nginx/html/ 2>/dev/null || true
+cp -rf /tmp/src/*.js   /usr/share/nginx/html/ 2>/dev/null || true
+
+echo "---> Done"
