@@ -66,7 +66,10 @@ RUN mkdir -p /var/log/nginx /var/cache/nginx /run /usr/share/nginx/html && \
     chown -R nginx:nginx /var/log/nginx /var/cache/nginx /etc/nginx /run /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/nginx.conf
-
+# S2I scripts
+COPY .s2i/bin/assemble /usr/libexec/s2i/assemble
+COPY .s2i/bin/run /usr/libexec/s2i/run
+RUN chmod +x /usr/libexec/s2i/assemble /usr/libexec/s2i/run
 EXPOSE 8080
 USER nginx
 CMD ["nginx", "-g", "daemon off;"]
