@@ -55,21 +55,22 @@ RUN apt-get update && apt-get install -y \
     libprotobuf32 \
     libre2-9 \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r nginx \
-    && useradd -r -g nginx nginx
+    && groupadd -r -g 1001 nginx \
+    && useradd -r -u 1001 -g nginx nginx
 
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=builder /etc/nginx /etc/nginx
 COPY --from=builder /usr/lib/nginx/modules/ngx_otel_module.so /usr/lib/nginx/modules/ngx_otel_module.so
 
-RUN mkdir -p /var/log/nginx /var/cache/nginx /run /usr/share/nginx/html && \
-    chown -R nginx:nginx /var/log/nginx /var/cache/nginx /etc/nginx /run /usr/share/nginx/html
+RUN mkdir -p /var/log/nginx /var/cache/nginx /run /usr/share/nginx/html /usr/libexec/s2i && \
+    chown -R 1001:1001 /var/log/nginx /var/cache/nginx /etc/nginx /run /usr/share/nginx/html /usr/libexec/s2i
 
-COPY nginx.conf /etc/nginx/nginx.conf
-# S2I scripts
 COPY .s2i/bin/assemble /usr/libexec/s2i/assemble
 COPY .s2i/bin/run /usr/libexec/s2i/run
 RUN chmod +x /usr/libexec/s2i/assemble /usr/libexec/s2i/run
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
 EXPOSE 8080
-USER nginx
+USER 1001
 CMD ["nginx", "-g", "daemon off;"]
